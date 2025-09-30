@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard :: ToDo Rails</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/menu.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+<div class="wrapper">
+
+    <!-- Include the Sidebar Menu -->
+    <div th:replace="~{fragments/menu :: menu}"></div>
+
+    <!-- Header Section -->
+    <div class="header" th:fragment="header">
+        <div class="logo-section">
+            <img th:src="@{/images/logo.png}" alt="ToDo Rails Logo" class="logo">
+            <div class="text-section">
+                <h1>ToDo Rails</h1>
+                <p>Keep Your Goals on Track</p>
+            </div>
+
+            <div class="heading-section">
+                <img th:src="@{/images/task.png}"/>
+                Dashboard
+                <br/>
+                <span style="font-size: 12px;">
+                    <span style="color: #007bff;"> Server Date:</span>
+                    <!-- TODO 15: display serverTime -->
+                    <span th:text="${serverTime}"></span>
+                </span>
+            </div>
+        </div>
+
+        <div class="auth-links">
+            <!-- TODO 24: logout link -->
+            <a th:href="@{/logout}">Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- Flash Messages -->
+        <div style="margin-left: 5vw">
+            <div th:if="${errorMessage}" class="flash-alert flash-alert-danger">
+                <p th:text="${errorMessage}"></p>
+            </div>
+            <div th:if="${successMessage}" class="flash-alert flash-alert-success">
+                <p th:text="${successMessage}"></p>
+            </div>
+        </div>
+
+        <!-- Heading for Priority Tasks -->
+        <div class="priority-heading-container">
+            <h2 class="priority-heading">TODO Tasks by Priority</h2>
+            <a th:href="@{/addtask}" class="add-task-btn" style="text-decoration: none;">+ Add task</a>
+        </div>
+
+        <!-- Row A: Priority Columns -->
+        <div class="row-a">
+
+            <!-- High Priority -->
+            <div class="column high-priority">
+                <div class="column-heading">High</div>
+                <div class="todo-container">
+                    <div th:if="${#lists.isEmpty(todaysTasks.?[priority == 'HIGH'])}">
+                        <p>Nothing to show here...</p>
+                    </div>
+                    <div th:each="task : ${todaysTasks}" th:if="${task.priority == 'HIGH'}" class="todo-item">
+                        <div class="task-details">
+                            <strong>Name:</strong> <span th:text="${task.title}">Task Title</span>
+                            <strong>Desc:</strong> <span th:text="${task.shortDescription}"></span>
+                        </div>
+                        <div class="button-group">
+                            <form th:action="@{/task/markDone}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn btn-done">Done</button>
+                            </form>
+                            <form th:action="@{/task/viewtask}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn btn-show">Show</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medium Priority -->
+            <div class="column medium-priority">
+                <div class="column-heading">Medium</div>
+                <div class="todo-container">
+                    <div th:if="${#lists.isEmpty(todaysTasks.?[priority == 'MEDIUM'])}">
+                        <p>Nothing to show here...</p>
+                    </div>
+                    <div th:each="task : ${todaysTasks}" th:if="${task.priority == 'MEDIUM'}" class="todo-item">
+                        <div class="task-details">
+                            <strong>Name:</strong> <span th:text="${task.title}">Task Title</span>
+                            <strong>Desc:</strong> <span th:text="${task.shortDescription}"></span>
+                        </div>
+                        <div class="button-group">
+                            <form th:action="@{/task/markDone}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn btn-done">Done</button>
+                            </form>
+                            <form th:action="@{/task/viewtask}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn btn-show">Show</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Priority -->
+            <div class="column low-priority">
+                <div class="column-heading">Low</div>
+                <div class="todo-container">
+                    <div th:if="${#lists.isEmpty(todaysTasks.?[priority == 'LOW'])}">
+                        <p>Nothing to show here...</p>
+                    </div>
+                    <div th:each="task : ${todaysTasks}" th:if="${task.priority == 'LOW'}" class="todo-item">
+                        <div class="task-details">
+                            <strong>Name:</strong> <span th:text="${task.title}">Task Title</span>
+                            <strong>Desc:</strong> <span th:text="${task.shortDescription}"></span>
+                        </div>
+                        <div class="button-group">
+                            <form th:action="@{/task/markDone}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn btn-done">Done</button>
+                            </form>
+                            <form th:action="@{/task/viewtask}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn btn-show">Show</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End of Row A -->
+
+        <!-- Row B: My Todos -->
+        <div class="row-b">
+            <div class="header-flex">
+                <h2>My Todo's</h2>
+                <div>
+                    <strong>Total tasks: </strong> &nbsp; <span th:text="${completedTasks}"></span> &nbsp; completed out of &nbsp;
+                    <span th:text="${totalTasks}"></span>
+                </div>
+            </div>
+
+            <div class="my-todos">
+                <div class="task-list">
+                    <div th:if="${#lists.isEmpty(allTasks)}">
+                        <p>Nothing to show here...</p>
+                    </div>
+                    <div th:each="task, stat : ${allTasks}" class="task-item" th:classappend="${stat.index % 2 == 0} ? 'alt-row'">
+                        <div class="task-info">
+                            <p><strong>Title:</strong> <span th:text="${task.title}">Task Title</span></p>
+                            <p><strong>Description:</strong> <span th:text="${task.description != null && !#strings.isEmpty(task.description) ? task.description : 'No description provided'}">Task Description</span></p>
+                            <p><strong>Date Added:</strong> <span th:text="${task.dateAdded != null ? #temporals.format(task.dateAdded, 'yyyy-MM-dd HH:mm') : 'N/A'}">Date Added</span></p>
+                            <p><strong>Date Due:</strong> <span th:text="${task.dueDate}">Date Due</span></p>
+                        </div>
+
+                        <div class="button-group">
+                            <form th:action="@{/task/delete}" method="post" style="display:inline;" onsubmit="return confirmDeleteTask()">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn-delete">Delete</button>
+                            </form>
+
+                            <div th:if="${!task.completed}">
+                                <form th:action="@{/task/edittask}" method="post" style="display:inline;">
+                                    <input type="hidden" name="taskId" th:value="${task.id}" />
+                                    <button type="submit" class="btn btn-update">Edit</button>
+                                </form>
+                            </div>
+
+                            <form th:action="@{/task/viewtask}" method="post" style="display:inline;">
+                                <input type="hidden" name="taskId" th:value="${task.id}" />
+                                <button type="submit" class="btn-view">View</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Row B -->
+
+    </div>
+    <!-- End of container -->
+
+    <!-- Include Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</div>
+
+<script th:src="@{/js/menu.js}"></script>
+<script>
+    function confirmDeleteTask() {
+       var result = confirm("Are you sure you want to delete this task? \nThis action cannot be undone.");
+       return (result ? true : false);
+   }
+
+    // Function to show popup notification
+    function showPopup(message, type = 'success') {
+        // Create popup element
+        const popup = document.createElement('div');
+        popup.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        if (type === 'success') {
+            popup.style.backgroundColor = '#28a745';
+        } else {
+            popup.style.backgroundColor = '#dc3545';
+        }
+        
+        popup.textContent = message;
+        
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add to page
+        document.body.appendChild(popup);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            popup.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.parentNode.removeChild(popup);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Check for success message on page load and show popup
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = document.querySelector('.flash-alert-success');
+        if (successMessage) {
+            const message = successMessage.textContent.trim();
+            showPopup(message, 'success');
+            
+            // Auto-hide the success message after 5 seconds
+            setTimeout(() => {
+                successMessage.style.transition = 'opacity 0.5s ease-out';
+                successMessage.style.opacity = '0';
+                setTimeout(() => {
+                    if (successMessage.parentNode) {
+                        successMessage.parentNode.removeChild(successMessage);
+                    }
+                }, 500);
+            }, 5000);
+        }
+        
+        // Check for error message on page load and show popup
+        const errorMessage = document.querySelector('.flash-alert-danger');
+        if (errorMessage) {
+            const message = errorMessage.textContent.trim();
+            showPopup(message, 'error');
+        }
+    });
+</script>
+
+</body>
+</html>
